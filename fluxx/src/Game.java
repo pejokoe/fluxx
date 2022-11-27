@@ -3,21 +3,30 @@ import java.util.ArrayList;
 
 public class Game {
 	
+	// IDs
 	private int idGame;
-	private int CardIdGenerator = 1;
+	private int cardIdGenerator = 1;
 	
+	// player limits
 	private static final int MINPLAYER = 2;
 	private static final int MAXPLAYER = 6;
 	
+	// list off all cards and players, initialization
+	// and control flow of the game
 	private List<Card> deck;
-	private List<Card> discardedPile;
-	private List<Card> drawStack;
 	private List<Player> players;
 	
+	// playing field
+	private List<Card> discardedPile;
+	private List<Card> drawStack;
 	private RuleArea ruleArea;
 	private CardGoal cardGoal = null;
 	
-	public Game(int num_players) {
+	// all user interaction
+	private UserInteraction ui = new UserInteraction();
+	
+	
+	public Game() {
 		deck = new ArrayList<>();
 		discardedPile = new ArrayList<>();
 		drawStack = new ArrayList<>();
@@ -25,71 +34,80 @@ public class Game {
 		
 		ruleArea = new RuleArea();
 		
-		initPlayers(num_players);
-		initCards();
-		initGame();
+		initPlayers();
+//		initCards();
+//		initGame();
 	}
 	
-	private void initPlayers(int num_players) {
-		
+	// init players with nickname and id
+	private void initPlayers() {
+		int num_players = ui.numPlayers("How many players will participate?", MINPLAYER, MAXPLAYER);
+		String tmpNickname = "";
+		for (int i = 0; i < num_players; i++) {
+			tmpNickname = ui.nickname(i);
+			players.add(new Player(tmpNickname, i));
+		}
 	}
 	
-	private void initCards() {
-		// rule cards
-		deck.add(new CardRule("draw", 2, CardIdGenerator++));
-		deck.add(new CardRule("draw", 3, CardIdGenerator++));
-		deck.add(new CardRule("draw", 4, CardIdGenerator++));
-		deck.add(new CardRule("draw", 5, CardIdGenerator++));
-		
-		deck.add(new CardRule("keeper", 2, CardIdGenerator++));
-		deck.add(new CardRule("keeper", 3, CardIdGenerator++));
-		deck.add(new CardRule("keeper", 4, CardIdGenerator++));
-
-		deck.add(new CardRule("play", 2, CardIdGenerator++));
-		deck.add(new CardRule("play", 3, CardIdGenerator++));
-		deck.add(new CardRule("play", 4, CardIdGenerator++));
-		deck.add(new CardRule("play", -1, CardIdGenerator++));
-		
-		deck.add(new CardRule("hand", 0, CardIdGenerator++));
-		deck.add(new CardRule("hand", 1, CardIdGenerator++));
-		deck.add(new CardRule("hand", 2, CardIdGenerator++));
-		
-		// keeper cards
-		deck.add(new CardKeeper("The Sun", CardIdGenerator++));
-		deck.add(new CardKeeper("The Moon", CardIdGenerator++));
-		deck.add(new CardKeeper("Television", CardIdGenerator++));
-		deck.add(new CardKeeper("Chocolate", CardIdGenerator++));
-		deck.add(new CardKeeper("Cookies", CardIdGenerator++));
-		deck.add(new CardKeeper("Time", CardIdGenerator++));
-		deck.add(new CardKeeper("Love", CardIdGenerator++));
-		deck.add(new CardKeeper("Sleep", CardIdGenerator++));
-		deck.add(new CardKeeper("Bread", CardIdGenerator++));
-		deck.add(new CardKeeper("Milk", CardIdGenerator++));
-		deck.add(new CardKeeper("The Rocket", CardIdGenerator++));
-		deck.add(new CardKeeper("Death", CardIdGenerator++));
-		deck.add(new CardKeeper("The Brain", CardIdGenerator++));
-		deck.add(new CardKeeper("The Toaster", CardIdGenerator++));
-		 
-		// goal cards
-		deck.add(new CardGoal("Chocolate", "Milk", CardIdGenerator++));
-		deck.add(new CardGoal("Milk", "Cookies", CardIdGenerator++));
-		deck.add(new CardGoal("Chocolate", "Cookies", CardIdGenerator++));
-		deck.add(new CardGoal("Sleep", "Time", CardIdGenerator++));
-		deck.add(new CardGoal("Rocket", "The Moon", CardIdGenerator++));
-		deck.add(new CardGoal("Love", "Brain", CardIdGenerator++));
-		deck.add(new CardGoal("The Moon", "The Sun", CardIdGenerator++));
-		deck.add(new CardGoal("Television", "Toaster", CardIdGenerator++));
-		deck.add(new CardGoal("The Sun", "Chocolate", CardIdGenerator++));
-		deck.add(new CardGoal("Death", "Chocolate", CardIdGenerator++));
-		deck.add(new CardGoal("The Rocket", "Brain", CardIdGenerator++));
-		deck.add(new CardGoal("Bread", "Cookies", CardIdGenerator++));
-		deck.add(new CardGoal("Bread", "The Toaster", CardIdGenerator++));
-	}
+//	// create cards
+//	private void initCards() {
+//		// rule cards
+//		deck.add(new CardRule("draw", 2, cardIdGenerator++));
+//		deck.add(new CardRule("draw", 3, cardIdGenerator++));
+//		deck.add(new CardRule("draw", 4, cardIdGenerator++));
+//		deck.add(new CardRule("draw", 5, cardIdGenerator++));
+//		
+//		deck.add(new CardRule("keeper", 2, cardIdGenerator++));
+//		deck.add(new CardRule("keeper", 3, cardIdGenerator++));
+//		deck.add(new CardRule("keeper", 4, cardIdGenerator++));
+//
+//		deck.add(new CardRule("play", 2, cardIdGenerator++));
+//		deck.add(new CardRule("play", 3, cardIdGenerator++));
+//		deck.add(new CardRule("play", 4, cardIdGenerator++));
+//		deck.add(new CardRule("play", -1, cardIdGenerator++));
+//		
+//		deck.add(new CardRule("hand", 0, cardIdGenerator++));
+//		deck.add(new CardRule("hand", 1, cardIdGenerator++));
+//		deck.add(new CardRule("hand", 2, cardIdGenerator++));
+//		
+//		// keeper cards
+//		deck.add(new CardKeeper("The Sun", cardIdGenerator++));
+//		deck.add(new CardKeeper("The Moon", cardIdGenerator++));
+//		deck.add(new CardKeeper("Television", cardIdGenerator++));
+//		deck.add(new CardKeeper("Chocolate", cardIdGenerator++));
+//		deck.add(new CardKeeper("Cookies", cardIdGenerator++));
+//		deck.add(new CardKeeper("Time", cardIdGenerator++));
+//		deck.add(new CardKeeper("Love", cardIdGenerator++));
+//		deck.add(new CardKeeper("Sleep", cardIdGenerator++));
+//		deck.add(new CardKeeper("Bread", cardIdGenerator++));
+//		deck.add(new CardKeeper("Milk", cardIdGenerator++));
+//		deck.add(new CardKeeper("The Rocket", cardIdGenerator++));
+//		deck.add(new CardKeeper("Death", cardIdGenerator++));
+//		deck.add(new CardKeeper("The Brain", cardIdGenerator++));
+//		deck.add(new CardKeeper("The Toaster", cardIdGenerator++));
+//		 
+//		// goal cards
+//		deck.add(new CardGoal("Chocolate", "Milk", cardIdGenerator++));
+//		deck.add(new CardGoal("Milk", "Cookies", cardIdGenerator++));
+//		deck.add(new CardGoal("Chocolate", "Cookies", cardIdGenerator++));
+//		deck.add(new CardGoal("Sleep", "Time", cardIdGenerator++));
+//		deck.add(new CardGoal("Rocket", "The Moon", cardIdGenerator++));
+//		deck.add(new CardGoal("Love", "Brain", cardIdGenerator++));
+//		deck.add(new CardGoal("The Moon", "The Sun", cardIdGenerator++));
+//		deck.add(new CardGoal("Television", "Toaster", cardIdGenerator++));
+//		deck.add(new CardGoal("The Sun", "Chocolate", cardIdGenerator++));
+//		deck.add(new CardGoal("Death", "Chocolate", cardIdGenerator++));
+//		deck.add(new CardGoal("The Rocket", "Brain", cardIdGenerator++));
+//		deck.add(new CardGoal("Bread", "Cookies", cardIdGenerator++));
+//		deck.add(new CardGoal("Bread", "The Toaster", cardIdGenerator++));
+//	}
 	
+	// deal cards
 	private void initGame() {
 		
 	}
 	
+	// start game routine
 	public void start() {
 		
 	}
