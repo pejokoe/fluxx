@@ -1,14 +1,13 @@
 
 public abstract class Card {
-	private int Id;
-	private static int idGenerator = 1;
+	protected int idCard;
 	
-	public Card() {
-		Id = idGenerator++;
+	public Card(int idCard) {
+		this.idCard = idCard;
 	}
 	
 	public int getId() {
-		return Id;
+		return idCard;
 	}
 	
 	abstract public void playCard(RuleArea ruleArea);
