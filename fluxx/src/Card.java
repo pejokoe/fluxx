@@ -11,5 +11,5 @@ public abstract class Card {
 		return Id;
 	}
 	
-	abstract public void playCard();
+	abstract public void playCard(RuleArea ruleArea);
 }
