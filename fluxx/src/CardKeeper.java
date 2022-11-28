@@ -6,5 +6,17 @@ public class CardKeeper extends Card {
 		// TODO Auto-generated method stub
 
 	}
+//I ADDED
+	private int idkeeper;
+	public CardKeeper(int idkeeper)
+	{
+	super(idcard, namecard, descriptioncard,typecard,totalquantitycard);
+	this.idkeeper=idkeeper;
+	}
+	public int getidkeeper()
+	{
+	return idkeeper;
+	}
+	//////
 
 }
