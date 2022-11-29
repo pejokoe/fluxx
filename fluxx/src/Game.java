@@ -172,8 +172,7 @@ public class Game {
 				
 			return cardgoals;
 		}
-		//We could take the next 2 methods to the main.
-		public List<CardKeeper> pickcardgoal()
+		public List<CardKeeper> pickcardgoal(List<CardGoal> cardgoals)
 		{
 			int maxcardgoal=10;
 			int randomcardgoal = (int)(Math.random()*maxcardgoal+1);
@@ -184,7 +183,7 @@ public class Game {
 			return currentgoalcard;
 	
 		}
-		public void checkWinPlayer()
+		public void checkWinPlayer(List<CardKeeper> currentgoalcard)
 		{
 			
 					
