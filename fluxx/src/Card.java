@@ -18,5 +18,7 @@ public abstract class Card {
 
 	abstract public String display();
 	
+	abstract public String display_extended();
+	
 	abstract public void playCard(Game game);
 }

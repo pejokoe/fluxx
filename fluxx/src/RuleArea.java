@@ -29,4 +29,13 @@ public class RuleArea {
 			return -1;
 		}
 	}
+	
+	public String display() {
+		return "still to do";
+//		return "The rules are: \n"
+//				+ "Draw: " + draw + " cards.\n"
+//				+ "Keeper limit: " + keeper + " keepers.\n"
+//				+ "Play: Maximum " + play + " cards.\n"
+//				+ "Hand limit: " + hand + " cards.";
+	}
 }

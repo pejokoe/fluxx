@@ -29,6 +29,10 @@ public class Player {
 		return idPlayer;
 	}
 	
+	public List<CardKeeper> getKeepers(){
+		return keepers;
+	}
+	
 	public boolean getTurn()
 	{
 		return turn;
@@ -62,9 +66,9 @@ public class Player {
 	{
 		handCards.add(pick);
 	}
-	public void drawCard()
+	public void drawCard(Card card)
 	{
-		handCards.remove(pick);
+		handCards.add(card);
 	}
 	public void setcardgoal(List<CardKeeper> currentgoal)
 	{
@@ -98,8 +102,8 @@ public class Player {
 	
 	public Card playCard(UserInteraction ui) {
 		for (int i = 0; i < handCards.size(); i++)
-			System.out.printf("%d: %s", i, handCards.get(i).getNameCard());
-		Card ret = handCards.get(ui.intRange("Choose a card", 0, handCards.size()));
+			System.out.printf("%d: %s\n", i, handCards.get(i).display());
+		Card ret = handCards.get(ui.intRange("Choose a card\n", 0, handCards.size()));
 		handCards.remove(ret);
 		return ret;
 	}

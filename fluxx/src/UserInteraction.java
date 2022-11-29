@@ -36,4 +36,9 @@ public class UserInteraction {
 		}
 		return input;
 	}
+	
+	public String wordInput(String instruction) {
+		System.out.println(instruction);
+		return scanner.next();
+	}
 }

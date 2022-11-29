@@ -23,6 +23,11 @@ public class CardRule extends Card {
 	}
 	
 	public String display() {
-		return this.getNameCard();
+		return "Rule " + this.getNameCard();
+	}
+	
+	public String display_extended() {
+		return "This is the rule card '" + this.getNameCard() + "'. Playing it "
+				+ "will change the given rule to the given number.\n";
 	}
 }

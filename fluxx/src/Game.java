@@ -21,6 +21,9 @@ public class Game {
 	private List<Card> discardPile;
 	private RuleArea ruleArea;
 	private CardGoal cardGoal = null;
+	
+	boolean winner = false;
+	int turn = 0;
 
 	// user interaction
 	private UserInteraction ui = new UserInteraction();
@@ -31,6 +34,7 @@ public class Game {
 	private List<CardGoal> cardgoalsgame; // List of card goal that were used in a specific game.
 	private List<CardKeeper> currentgoalcard; // The current goal card. It is a combination of two keeper cards.
 
+	
 	public Game() {
 		deck = new ArrayList<>();
 		discardPile = new ArrayList<>();
@@ -42,6 +46,7 @@ public class Game {
 		cardgoals = new ArrayList<CardGoal>();
 		cardgoalsgame = new ArrayList<CardGoal>();
 		currentgoalcard = new ArrayList<CardKeeper>();
+		
 
 		////////
 
@@ -76,7 +81,7 @@ public class Game {
 		deck.add(new CardRule("play", 2, cardIdGenerator++, "Play 2"));
 		deck.add(new CardRule("play", 3, cardIdGenerator++, "Play 3"));
 		deck.add(new CardRule("play", 4, cardIdGenerator++, "Play 4"));
-		deck.add(new CardRule("play", -1, cardIdGenerator++, "Play all"));
+		deck.add(new CardRule("play", 0, cardIdGenerator++, "Play all"));
 
 		deck.add(new CardRule("hand", 0, cardIdGenerator++, "Hand limit 0"));
 		deck.add(new CardRule("hand", 1, cardIdGenerator++, "Hand limit 1"));
@@ -114,7 +119,7 @@ public class Game {
 	}
 
 	// randomly create goals consisting of two keepers
-	public List<CardGoal> createCardGoals(List<CardKeeper> cardKeepers) {
+	private List<CardGoal> createCardGoals(List<CardKeeper> cardKeepers) {
 		List<CardGoal> cardGoals = new ArrayList<>();
 		int numberCardGoals = 15; // setting this number to 15 keeps the types of cards balanced
 		Random ran = new Random();
@@ -134,9 +139,15 @@ public class Game {
 		return cardGoals;
 	}
 
-	// start game routine
-	public void start() {
-
+	// game routine
+	private void start() {
+		while (!winner) {
+			prePhase();
+			drawPhase();
+			playPhase();
+//			discardPhase();
+			turn = (turn + 1) % players.size();
+		}
 	}
 
 	public List<CardKeeper> pickcardgoal(List<CardGoal> cardgoals) {
@@ -163,9 +174,92 @@ public class Game {
 	private void shuffle(List<Card> toShuffle) {
 		Collections.shuffle(toShuffle);
 	}
+	
+	private void drawPhase() {
+		int draw = ruleArea.getLimit("draw");
+		if (draw == -1) {
+			draw = 1;
+		}
+		while (draw > 0) {
+			if (deck.isEmpty()) {
+				shuffle(discardPile);
+				deck = discardPile;
+				discardPile = null;
+			} else {
+				players.get(turn).drawCard(deck.get(0));
+				deck.remove(0);
+			}
+			draw--;
+		}
+	}
+	
+	private void prePhase() {
+		System.out.printf("\n%s, it's your turn.\n\n", players.get(turn).getNickName());
+		String input = ui.wordInput("Type 'help' to display all input options.\n"
+				+ "All inputs displayed by calling 'help' are allowed too.\n"
+				+ "Type 'done' or anything else to continue with your turn.\n");
+		while (input != "done") {
+			input = processWordInput(input);
+		}
+	}
+	
+	private String processWordInput(String input) {
+		String info = "";
+		switch (input) {
+		case "showKeepers":
+			for (Player player : players) {
+				info += player.getNickName() + ":\n";
+				for (CardKeeper keeper : player.getKeepers()) {
+					info +=  keeper.getNameCard() + "\n";
+				}
+			}
+			input = ui.wordInput(info);
+			break;
+		case "showGoals":
+			if (cardGoal != null) {
+				info = cardGoal.display();
+			} else {
+				info = "No goal in play yet.\n";
+			}
+			input = ui.wordInput(info);
+			break;
+		case "showRules":
+			info = ruleArea.display();
+			input = ui.wordInput(info);
+			break;
+		case "help":
+			info = "Type 'showKeepers' to display all the keepers on the playing field.\n"
+					+ "Type 'showGoals' to display the current goal.\n"
+					+ "Type 'showRules' to display all current rules."
+					+ "Type 'help' to display all input options.\n"
+					+ "Type 'done' to continue with your turn.\n";
+			input = ui.wordInput(info);
+			break;
+		default:
+			input = "done";
+		}
+		return input;
+	}
+	
+	private void playPhase() {
+		int play = ruleArea.getLimit("play");
+		if (play == -1) {
+			play = 1;
+		}
+		int maxPlay = players.get(turn).Handcards().size();
+		while(play > 0 && maxPlay > 0) {
+			Card card = players.get(turn).playCard(ui);
+			playCard(card);
+			play--;
+			maxPlay--;
+		}
+			
+	}
+		
 
 	// generic play card method, uses dynamic lookup
 	public void playCard(Card card) {
+		System.out.printf("You played card: %s\n", card.display());
 		card.playCard(this);
 	}
 
@@ -175,7 +269,7 @@ public class Game {
 	}
 
 	public void playKeeper(CardKeeper cardKeeper) {
-		currentPlayer.playKeeper(cardKeeper);
+		players.get(turn).playKeeper(cardKeeper);
 	}
 
 	public void playGoal(CardGoal cardGoal) {
