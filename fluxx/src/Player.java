@@ -26,7 +26,7 @@ public class Player {
 	}
 	public int idPlayer()
 	{
-		return idplayer;
+		return idPlayer;
 	}
 	
 	public boolean getTurn()
@@ -41,13 +41,13 @@ public class Player {
 	{
 		this.winplayer=true;
 	}
-	public void setHandcards()
+	public void setHandcards(List<Card> startingHand)
 	{
-		this.handcards = new ArrayList<>();
+		handCards.addAll(startingHand);
 	}
 	public List<Card> Handcards()
 	{
-		return handcards;
+		return handCards;
 	}
 	
 	public void setpick(Card pick)
@@ -60,11 +60,11 @@ public class Player {
 	}
 	public void pickCard()
 	{
-		handcards.add(pick);
+		handCards.add(pick);
 	}
 	public void drawCard()
 	{
-		handcards.remove(pick);
+		handCards.remove(pick);
 	}
 	public void setcardgoal(List<CardKeeper> currentgoal)
 	{
@@ -94,6 +94,18 @@ public class Player {
 		if(accomplishcount==2)  accomplish=true;
 	
 		return accomplish;
+	}
+	
+	public Card playCard(UserInteraction ui) {
+		for (int i = 0; i < handCards.size(); i++)
+			System.out.printf("%d: %s", i, handCards.get(i).getNameCard());
+		Card ret = handCards.get(ui.intRange("Choose a card", 0, handCards.size()));
+		handCards.remove(ret);
+		return ret;
+	}
+	
+	public void playKeeper(CardKeeper cardKeeper) {
+		keepers.add(cardKeeper);
 	}
 	
 	//For special goals.

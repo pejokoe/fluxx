@@ -13,10 +13,10 @@ public class UserInteraction {
 		return scanner.next();
 	}
 	
-	public int numPlayers(String instruction, int min, int max) {
+	public int intRange(String instruction, int min, int max) {
 		int input = intSelection(instruction);
 		while(min > input || max < input) {
-			System.out.println("Only 2 to 6 players are allowed!");
+			System.out.printf("Please give an integer between %d and %d!\n", min, max);
 			input = intSelection(instruction);
 		}
 		return input;

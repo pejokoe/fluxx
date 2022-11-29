@@ -1,24 +1,16 @@
 
 public class CardKeeper extends Card {
 
-	//I ADDED
-	private int idkeeper;
-	//////
-	@Override
-	public void playCard() {
-		// TODO Auto-generated method stub
-
+	public CardKeeper(String name, int idCard) {
+		super(idCard, name);
 	}
-	//I ADDED
-	public CardKeeper(int idkeeper)
-	{
-	super(idcard, namecard, descriptioncard,typecard,totalquantitycard);
-	this.idkeeper=idkeeper;
+	
+	public void playCard(Game game) {
+		game.playKeeper(this);
 	}
-	public int getidkeeper()
-	{
-	return idkeeper;
+	
+	public String display() {
+		return "Keeper " + this.getNameCard();
 	}
-	//////
 
 }

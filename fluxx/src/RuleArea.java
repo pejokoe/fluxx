@@ -1,23 +1,32 @@
 import java.util.HashMap;
+import java.util.List;
 
 public class RuleArea {
-	private HashMap<String, Integer> limits;
+	private HashMap<String, CardRule> limits;
 	
 	public RuleArea() {
 		limits = new HashMap<>();
-		limits.put("draw", 1);
-		limits.put("keeper", -1);
-		limits.put("play", 1);
-		limits.put("hand", -1);
+		limits.put("draw", null);
+		limits.put("keeper", null);
+		limits.put("play", null);
+		limits.put("hand", null);
 	}
 	
 	// set specific limit
-	public void setLimit(String which, int limit) {
-		limits.replace(which, limit);
+	public void playRule(CardRule cardRule, List<Card> discardedPile) {
+		String which = cardRule.getWhich();
+		if (limits.get(which) != null) {
+			discardedPile.add(limits.get(which));
+		}
+		limits.replace(cardRule.getWhich(), cardRule);
 	}
 	
 	// return limit, -1 if no limit set
 	public int getLimit(String which) {
-		return limits.get(which);
+		if (limits.get(which) != null) {
+			return limits.get(which).getLimit();
+		} else {
+			return -1;
+		}
 	}
 }

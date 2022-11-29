@@ -1,52 +1,22 @@
 
 public abstract class Card {
-	protected int idCard;
+	private int idCard;
+	private String nameCard;
 	
-	//I ADDED
-	protected static String namecard;
-	protected static String descriptioncard;
-	protected static String typecard;
-	protected static int totalquantitycard;
-	//////////
-	
-	public Card(int idCard) {
+	public Card(int idCard, String nameCard) {
 		this.idCard = idCard;
+		this.nameCard = nameCard;
 	}
 	
 	public int getId() {
 		return idCard;
 	}
 	
-	abstract public void playCard(RuleArea ruleArea);
-	// I ADDED
-	public Card(int idcard, String namecard,String descriptioncard, String typecard, int totalquantitycard)
-	{
-	this.idcard=idcard;
-	this.namecard=namecard;
-	this.descriptioncard=descriptioncard;
-	this.typecard=typecard;
-	this.totalquantitycard=totalquantitycard;
-	}
-	public String getnamecard()
-	{
-	return namecard;
-	}
-	public String getdescriptioncard()
-	{
-	return descriptioncard;
-	}
-	public String gettypecard()
-	{
-	return typecard;
-	}
-	public int gettotalquantitycard()
-	{
-	return totalquantitycard;
+	public String getNameCard() {
+		return nameCard;
 	}
 
-	public void suffle()
-	{
+	abstract public String display();
 	
-	}
-	////////////
+	abstract public void playCard(Game game);
 }
