@@ -155,7 +155,7 @@ public class Game {
 
 			//Just to try, we are creating a list of 10 card goals, with random combinations of card keepers.
 			int maxcardgoal=10;
-			int numberkeepers;
+			int numberkeepers=14;
 			
 			for(int j=0; j<maxcardgoal; j++)
 			{
@@ -163,7 +163,8 @@ public class Game {
 				int randomkeeper1 = (int)(Math.random()*numberkeepers+1);
 				int randomkeeper2 = (int)(Math.random()*numberkeepers+1);
 				if(randomkeeper1==randomkeeper2 && randomkeeper2!=numberkeepers) randomkeeper2++;
-				else randomkeeper2--;
+				else 
+					if(randomkeeper1==randomkeeper2 && randomkeeper2==numberkeepers) randomkeeper2--;
 					
 				CardGoal cg=new CardGoal(j,cardkeepers.get(randomkeeper1), cardkeepers.get(randomkeeper2));
 				cardgoals.add(cg);
