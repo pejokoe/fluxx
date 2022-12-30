@@ -342,19 +342,15 @@ public class Game {
 	
 	//After checking the help displayers, the player will be able to play their cards.
 	private void playPhase() {
-		int play = ruleArea.getLimit("play");
-		if (play == -1) {
-			play = 1;
+		int maxPlayRule = ruleArea.getLimit("play");
+		if (maxPlayRule == -1) {
+			maxPlayRule = 1;
 		}
-		int maxPlay = players.get(turn).Handcards().size();
-		
-		System.out.printf("You must play %d card(s)!\n", Math.min(play, maxPlay));
-		System.out.println("Your hand cards are:");
-		System.out.println(players.get(turn).displayHand());
-		while(play > 0 && maxPlay > 0) {
-			Card card = players.get(turn).playCard(ui);
+		int maxPlayHandcards = players.get(turn).Handcards().size();
+		int maxPlay = Math.min(maxPlayRule, maxPlayHandcards);
+		while(maxPlay > 0) {
+			Card card = players.get(turn).playCard(ui, maxPlay);
 			playCard(card);
-			play--;
 			maxPlay--;
 		}
 			

@@ -120,12 +120,15 @@ public class Player {
 	public String displayHand() {
 		String ret = "";
 		for (int i = 0; i < handCards.size(); i++)
-			ret += String.format("%d: %s\n", i, handCards.get(i).display());
+			ret += String.format("  %d: %s\n", i, handCards.get(i).display());
 		return ret;
 	}
 	
 	//Method to return the card that the player choose.
-	public Card playCard(UserInteraction ui) {
+	public Card playCard(UserInteraction ui, int maxPlay) {
+		System.out.printf("\nYou must play %d card(s)!\n", maxPlay);
+		System.out.println("\nYour hand cards are:");
+		System.out.println(displayHand());
 		Card ret = handCards.get(ui.intRange("Choose a card to play by entering its number.\n", 0, handCards.size()));
 		handCards.remove(ret);
 		return ret;
