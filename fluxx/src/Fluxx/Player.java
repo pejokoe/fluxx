@@ -117,16 +117,22 @@ public class Player {
 		return accomplish;
 	}
 	
+	public String displayHand() {
+		String ret = "";
+		for (int i = 0; i < handCards.size(); i++)
+			ret += String.format("%d: %s\n", i, handCards.get(i).display());
+		return ret;
+	}
+	
 	//Method to return the card that the player choose.
 	public Card playCard(UserInteraction ui) {
-		for (int i = 0; i < handCards.size(); i++)
-			System.out.printf("%d: %s\n", i, handCards.get(i).display());
-		Card ret = handCards.get(ui.intRange("Choose a card\n", 0, handCards.size()));
+		Card ret = handCards.get(ui.intRange("Choose a card to play by entering its number.\n", 0, handCards.size()));
 		handCards.remove(ret);
 		return ret;
 	}
 	
 	public void playKeeper(CardKeeper cardKeeper) {
+		// keeper limit still needs to be done
 		keepers.add(cardKeeper);
 	}
 	

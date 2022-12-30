@@ -58,7 +58,7 @@ public class Game {
 		cardGoals = new ArrayList<CardGoal>();		
 		currentgoalcard = new ArrayList<CardKeeper>();
 		
-		//Starting the gamming process.
+		//Starting the gaming process.
 		initPlayers();
 		initCards();
 		initGame();
@@ -147,7 +147,7 @@ public class Game {
 				}
 			}
 			//Update the temporal list of the new random combination of keepers.
-			listTemp= Arrays.asList(keeper1.getNameCard()+keeper2.getNameCard(),keeper2.getNameCard()+keeper1.getNameCard());
+			listTemp = Arrays.asList(keeper1.getNameCard()+keeper2.getNameCard(),keeper2.getNameCard()+keeper1.getNameCard());
 			//Update the general list with all combinations with not repetitions.
 			listOne.addAll(listTemp);
 			//It can not exist the same combination of card Keepers as card Goals, so next code will check that.
@@ -183,8 +183,8 @@ public class Game {
 	// game routine
 	private void start() {
 		while (!winner) {
-			prePhase();
 			drawPhase();
+			prePhase();
 			playPhase();
 //			discardPhase();
 			turn = (turn + 1) % players.size();
@@ -284,9 +284,9 @@ public class Game {
 	//Displaying the main help options in each turn.
 	private void prePhase() {
 		System.out.printf("\n%s, it's your turn.\n\n", players.get(turn).getNickName());
-		String input = ui.wordInput("Type 'help' to display all input options.\n"
+		String input = ui.wordInput("\nType 'help' to display all input options.\n"
 				+ "All inputs displayed by calling 'help' are allowed too.\n"
-				+ "Type 'done' or anything else to continue with your turn.\n");
+				+ "Type anything else to continue with your turn.\n");
 		while (input != "done") {
 			input = processWordInput(input);
 		}
@@ -298,9 +298,13 @@ public class Game {
 		switch (input) {
 		case "1":
 			for (Player player : players) {
-				info += player.getNickName() + ":\n";
-				for (CardKeeper keeper : player.getKeepers()) {
-					info +=  keeper.getNameCard() + "\n";
+				if (player.getKeepers().isEmpty()) {
+					info += player.getNickName() + " has no keepers.\n";
+				} else {
+					info += player.getNickName() + "'s keepers: \n";
+					for (CardKeeper keeper : player.getKeepers()) {
+						info += "   " + keeper.getNameCard() + "\n";
+					}
 				}
 			}
 			input = ui.wordInput(info);
@@ -317,12 +321,17 @@ public class Game {
 			info = ruleArea.display();
 			input = ui.wordInput(info);
 			break;
+		case "4":
+			info = players.get(turn).displayHand();
+			input = ui.wordInput(info);
+			break;
 		case "help":
 			info = "Type '1' to display all the keepers on the playing field.\n"
 					+ "Type '2' to display the current goal.\n"
 					+ "Type '3' to display all current rules.\n"
+					+ "Type '4' to display your hand cards.\n"
 					+ "Type 'help' to display all input options.\n"
-					+ "Type 'done' to continue with your turn.\n";
+					+ "Type anything else to continue with your turn.\n";
 			input = ui.wordInput(info);
 			break;
 		default:
@@ -338,6 +347,10 @@ public class Game {
 			play = 1;
 		}
 		int maxPlay = players.get(turn).Handcards().size();
+		
+		System.out.printf("You must play %d card(s)!\n", Math.min(play, maxPlay));
+		System.out.println("Your hand cards are:");
+		System.out.println(players.get(turn).displayHand());
 		while(play > 0 && maxPlay > 0) {
 			Card card = players.get(turn).playCard(ui);
 			playCard(card);

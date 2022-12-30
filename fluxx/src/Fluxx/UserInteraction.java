@@ -27,12 +27,13 @@ public class UserInteraction {
 		boolean isInt = false;
 		int input = 0;
 		System.out.println(instruction);
-		while(!isInt) {
+		while (!isInt) {
 			try {
 				input = scanner.nextInt();
 				isInt = true;
 			} catch (InputMismatchException e) {
 				System.out.println("Please give an Integer as input.");
+				scanner.next();
 			}
 		}
 		return input;
