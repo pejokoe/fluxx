@@ -360,23 +360,90 @@ public class Game {
 	// Generic play card method, uses dynamic lookup
 	public void playCard(Card card) {
 		System.out.printf("You played card: %s\n", card.display());
-		//ADDED.
-		//To check if the goal is accomplished in each turn.
-		if(card.display().contains("Goal")){
-			for(int i=0; i<cardGoals.size();i++) {
-				if(cardGoals.get(i).getId()==card.getId())
-				{
-					currentgoalcard.add(cardGoals.get(i).getKeeper1());
-					currentgoalcard.add(cardGoals.get(i).getKeeper2());
-					checkWin(currentgoalcard);
-				}
-			}
+		if(card.display().contains("Goal"))
+		{
+			playGoal(card);
 		}
+		/*if (card.display().contains("Keeper"))
+		{
+			playKeeper((CardKeeper)card);
+		}
+		if (card.display().contains("Rule"))
+		{
+			playRule((CardRule)card);
+		}*/
+		
 		card.playCard(this);
 	}
 
 	// card specific play methods
+	public void playGoal(Card card) {
+		currentgoalcard.clear();
+		for(int i=0; i<cardGoals.size();i++) {
+			if(cardGoals.get(i).getId()==card.getId())
+			{
+				currentgoalcard.add(cardGoals.get(i).getKeeper1());
+				currentgoalcard.add(cardGoals.get(i).getKeeper2());
+				checkWin(currentgoalcard);
+			}
+		}
+		if(winner=false)
+		{   //Check if card needs to be casted back to card.
+			if (this.cardGoal != null) {
+				discardPile.add(this.cardGoal);
+			}
+			this.cardGoal = cardGoal; //I do not know how to update this.
+		}
+	}
+	
+	//I do not understand pretty well the class rule area so, i think here it will be necessary to add something inside if.
 	public void playRule(CardRule cardRule) {
+		if(cardRule.getWhich()=="keeper")
+		{
+			keeperLimit(cardRule);
+		}
+		else 		ruleArea.playRule(cardRule, discardPile);
+	}
+
+	public void playKeeper(CardKeeper cardKeeper) {
+		players.get(turn).playKeeper(cardKeeper);
+		if(cardGoal!=null)
+		{
+			
+			if(players.get(turn).getKeepers().containsAll(currentgoalcard)==true)
+			{
+				players.get(turn).winPlayer();
+				winner=players.get(turn).getWinPlayer();
+				System.out.println("Player " + players.get(turn).getNickName() + " wins!!!");
+				
+			}
+			
+		}
+		
+	}
+	public void keeperLimit(CardRule keeplimit)
+	{
+		int limit=keeplimit.getLimit();
+		for (Player player : players) {
+			for (Card keeper : player.Handcards())
+			{
+				while (limit>0)
+				{
+					if(keeper.display().contains("Keeper"))
+					{
+					discardPile.add(keeper);
+					player.discardCard(keeper);
+					}
+					limit--;
+				}
+			}
+			
+		}
+		
+		
+	}
+	// card specific play methods
+	/*public void playRule(CardRule cardRule) {
 		ruleArea.playRule(cardRule, discardPile);
 	}
 
@@ -389,6 +456,6 @@ public class Game {
 			discardPile.add(this.cardGoal);
 		}
 		this.cardGoal = cardGoal;
-	}
+	}*/
 }
 
