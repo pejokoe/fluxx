@@ -86,6 +86,11 @@ public class Player {
 	{
 		handCards.add(card);
 	}
+		//ADDED 30-12
+	public void discardCard(Card card)
+	{
+		handCards.remove(card);
+	}
 	public void setcardgoal(List<CardKeeper> currentgoal)
 	{
 		
