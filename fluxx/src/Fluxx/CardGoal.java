@@ -37,7 +37,7 @@ public class CardGoal extends Card
 
 	public String display() 
 	{
-		return "Goal: " + this.getNameCard();
+		return " Goal " + this.getNameCard();
 	}
 
 	public String display_extended() 

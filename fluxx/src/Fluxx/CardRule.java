@@ -24,7 +24,7 @@ public class CardRule extends Card {
 	}
 	
 	public String display() {
-		return "Rule " + this.getNameCard();
+		return " Rule " + this.getNameCard();
 	}
 	
 	public String display_extended() {

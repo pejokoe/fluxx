@@ -32,11 +32,31 @@ public class RuleArea {
 	}
 	
 	public String display() {
-		return "still to do";
-//		return "The rules are: \n"
-//				+ "Draw: " + draw + " cards.\n"
-//				+ "Keeper limit: " + keeper + " keepers.\n"
-//				+ "Play: Maximum " + play + " cards.\n"
-//				+ "Hand limit: " + hand + " cards.";
+		String ret = "";
+		ret += " Draw: ";
+		if (limits.get("draw") == null) {
+			ret += "1 card\n" ;
+		} else {
+			ret += String.format("%s", limits.get("draw").getLimit()) + " cards\n";
+		}
+		ret += " Keeper limit: ";
+		if (limits.get("keeper") == null) {
+			ret += "no limit\n" ;
+		} else {
+			ret += String.format("%s", limits.get("keeper").getLimit()) + " keepers\n";
+		}
+		ret += " Play: ";
+		if (limits.get("play") == null) {
+			ret += "1 card\n" ;
+		} else {
+			ret += String.format("%s", limits.get("play").getLimit()) + " cards\n";
+		}
+		ret += " Hand cards limit: ";
+		if (limits.get("hand") == null) {
+			ret += "no limit\n" ;
+		} else {
+			ret += String.format("%s", limits.get("hand").getLimit()) + " cards\n";
+		}
+		return ret;
 	}
 }

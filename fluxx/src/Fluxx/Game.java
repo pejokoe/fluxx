@@ -182,6 +182,7 @@ public class Game {
 
 	// game routine
 	private void start() {
+		tutorial();
 		while (!winner) {
 			drawPhase();
 			prePhase();
@@ -263,6 +264,13 @@ public class Game {
 		Collections.shuffle(toShuffle);
 	}
 	
+	private void tutorial() {
+		String toPrint = "\nWhen it's your turn, type 'help' to display all input options.\n"
+				+ "All inputs displayed by calling 'help' are allowed too.\n"
+				+ "Type anything else to continue with your turn.\n";
+		System.out.println(toPrint);
+	}
+	
 	//Managing the draw process of the game.
 	private void drawPhase() {
 		int draw = ruleArea.getLimit("draw");
@@ -283,10 +291,8 @@ public class Game {
 	}
 	//Displaying the main help options in each turn.
 	private void prePhase() {
-		System.out.printf("\n%s, it's your turn.\n\n", players.get(turn).getNickName());
-		String input = ui.wordInput("\nType 'help' to display all input options.\n"
-				+ "All inputs displayed by calling 'help' are allowed too.\n"
-				+ "Type anything else to continue with your turn.\n");
+		System.out.printf("\n%s, it's your turn.\n", players.get(turn).getNickName());
+		String input = ui.wordInput("\nType anything except 1, 2, 3, 4 and 'help' to continue.\n");
 		while (input != "done") {
 			input = processWordInput(input);
 		}
@@ -297,32 +303,36 @@ public class Game {
 		String info = "";
 		switch (input) {
 		case "1":
+			info = "Keepers: \n";
 			for (Player player : players) {
 				if (player.getKeepers().isEmpty()) {
-					info += player.getNickName() + " has no keepers.\n";
+					info += " " + player.getNickName() + " has no keepers.\n";
 				} else {
-					info += player.getNickName() + "'s keepers: \n";
+					info += " " + player.getNickName() + "'s keepers: \n";
 					for (CardKeeper keeper : player.getKeepers()) {
-						info += "   " + keeper.getNameCard() + "\n";
+						info += " " + keeper.display() + "\n";
 					}
 				}
 			}
 			input = ui.wordInput(info);
 			break;
 		case "2":
+			info = "Current goal:\n";
 			if (cardGoal != null) {
-				info = cardGoal.display();
+				info += cardGoal.display();
 			} else {
-				info = "No goal in play yet.\n";
+				info += " No goal in play yet.\n";
 			}
 			input = ui.wordInput(info);
 			break;
 		case "3":
-			info = ruleArea.display();
+			info = "Current rules:\n";
+			info += ruleArea.display();
 			input = ui.wordInput(info);
 			break;
 		case "4":
-			info = players.get(turn).displayHand();
+			info = "Your hand cards:\n";
+			info += players.get(turn).displayHand();
 			input = ui.wordInput(info);
 			break;
 		case "help":
@@ -359,7 +369,7 @@ public class Game {
 
 	// Generic play card method, uses dynamic lookup
 	public void playCard(Card card) {
-		System.out.printf("You played card: %s\n", card.display());
+		System.out.printf("You played card: %s\n\n", card.display());
 		if(card.display().contains("Goal"))
 		{
 			playGoal(card);

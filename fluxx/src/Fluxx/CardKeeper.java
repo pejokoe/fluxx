@@ -11,7 +11,7 @@ public class CardKeeper extends Card {
 	}
 	
 	public String display() {
-		return "Keeper " + this.getNameCard();
+		return " Keeper " + this.getNameCard();
 	}
 
 	public String display_extended() {
