@@ -71,6 +71,18 @@ public class Game {
 		String tmpNickname = "";
 		for (int i = 0; i < num_players; i++) {
 			tmpNickname = ui.nickname(i);
+			//I added this part on january 1.
+			//To control different nicknames.
+			for(int j = 0; j<players.size();j++)
+			{
+				if(players.get(j).getNickName().equals(tmpNickname))
+				{						
+					System.out.println("Please, choose another name there is already a Nick Name --> "+tmpNickname);				
+					tmpNickname = ui.nickname(i);
+					break;
+				}
+			
+			}
 			players.add(new Player(tmpNickname, i));
 		}
 	}
@@ -368,69 +380,63 @@ public class Game {
 		
 
 	// Generic play card method, uses dynamic lookup
-	public void playCard(Card card) {
-		System.out.printf("You played card: %s\n\n", card.display());
-		if(card.display().contains("Goal"))
-		{
-			playGoal(card);
-		}
-		/*if (card.display().contains("Keeper"))
-		{
-			playKeeper((CardKeeper)card);
-		}
-		if (card.display().contains("Rule"))
-		{
-			playRule((CardRule)card);
-		}*/
-		
+	public void playCard(Card card) 
+	{
+		System.out.printf("You played card: %s\n", card.display());
 		card.playCard(this);
 	}
 
+	//I changed the next 4 methods  on january 1.
 	// card specific play methods
-	public void playGoal(Card card) {
+	
+	public void playGoal(CardGoal cardGoal) 
+	{
+	
 		currentgoalcard.clear();
-		for(int i=0; i<cardGoals.size();i++) {
-			if(cardGoals.get(i).getId()==card.getId())
+		for(int i=0; i<cardGoals.size();i++) 
+		{
+			if(cardGoals.get(i).getId()==cardGoal.getId())
 			{
 				currentgoalcard.add(cardGoals.get(i).getKeeper1());
 				currentgoalcard.add(cardGoals.get(i).getKeeper2());
 				checkWin(currentgoalcard);
 			}
 		}
-		if(winner=false)
+		if(winner==false)
 		{   //Check if card needs to be casted back to card.
-			if (this.cardGoal != null) {
+			if (this.cardGoal != null) 
+			{
 				discardPile.add(this.cardGoal);
 			}
-			this.cardGoal = cardGoal; //I do not know how to update this.
+			this.cardGoal = cardGoal; 
 		}
 	}
 	
-	//I do not understand pretty well the class rule area so, i think here it will be necessary to add something inside if.
-	public void playRule(CardRule cardRule) {
+	public void playRule(CardRule cardRule) 
+	{
+		
 		if(cardRule.getWhich()=="keeper")
 		{
 			keeperLimit(cardRule);
+			
+			System.out.println("get into cardRule Keeper");
 		}
-		else 		ruleArea.playRule(cardRule, discardPile);
+		ruleArea.playRule(cardRule, discardPile);
 	}
-
-	public void playKeeper(CardKeeper cardKeeper) {
-		players.get(turn).playKeeper(cardKeeper);
+	public void playKeeper(CardKeeper cardKeeper) 
+	{
 		if(cardGoal!=null)
 		{
-			
 			if(players.get(turn).getKeepers().containsAll(currentgoalcard)==true)
 			{
 				players.get(turn).winPlayer();
 				winner=players.get(turn).getWinPlayer();
 				System.out.println("Player " + players.get(turn).getNickName() + " wins!!!");
-				
 			}
-			
 		}
-		
+		players.get(turn).playKeeper(cardKeeper);
 	}
+	
 	public void keeperLimit(CardRule keeplimit)
 	{
 		int limit=keeplimit.getLimit();
@@ -447,10 +453,7 @@ public class Game {
 					limit--;
 				}
 			}
-			
 		}
-		
-		
 	}
 	// card specific play methods
 	/*public void playRule(CardRule cardRule) {
