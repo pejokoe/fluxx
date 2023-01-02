@@ -126,6 +126,15 @@ public class Game {
 
 		// goal cards
 		deck.addAll(createCardGoals(cardKeepers));
+		
+		//Special goals cards.
+		ArrayList<CardGoal> cardSGoals = new ArrayList<>();
+		for(int i=5; i<=10; i=i+5)
+		{
+			cardSGoals.add(new CardGoal( i+" keepers (S)", cardIdGenerator++,i));	
+		}
+		
+		deck.addAll(cardSGoals);
 	}
 
 	// Deal cards
@@ -223,32 +232,27 @@ public class Game {
 		}
 
 	}
-	//NEED TO BE CHECK IF WE CAN ADD BECAUSE WE SHOULD CREATE MORE GOAL CARDS.
 	//Method to check if the current goal was accomplished, but in the case of having an special card goal.
-	public void checkWinSp(CardGoal currentgoal) {
+	public void checkWinSp(CardGoal cardgoal) {
 		int count=0;
-		int max=5;
-		int idWin=0;
-		int countwin=1;
-		String nickname="";
+		int max=cardgoal.special();
+		int countwin=0;
 		Player temp = null;
 
 		for (int i = 0; i < players.size(); i++) 
 		{
-			if (players.get(i).getKeepers().size()>=5) 
+			if (players.get(i).getKeepers().size()>=max) 
 			{
 				if(players.get(i).getKeepers().size()>max)
-				{
+				{//To obtain the max number of card keepers between the players that have more than # keeper cards.
 					max=players.get(i).getKeepers().size();
-					//idWin=players.get(i).idPlayer();
-					nickname=players.get(i).getNickName();
 					
 				}
-			count++;
+			count++; //To count the number of players that have more than the card keepers defined in th goal.
 			}
 		}		
 		if(count==players.size())
-		{
+		{//Case: accomplish the goal, so time to choose the one with more keeper cards.
 			for (int i = 0; i < players.size(); i++) 
 			{
 				if (players.get(i).getKeepers().size()==max) 		
@@ -262,11 +266,12 @@ public class Game {
 			if(countwin==1)
 			{
 				temp.winPlayer();
-				System.out.println("Player" + nickname + "wins!!!");
+				winner=temp.getWinPlayer();
+				System.out.println("Player " + temp.getNickName() + " wins!!!");
 			}
 			else
 			{
-				System.out.println("It is a tie; two or more players with same number of keepers");
+				System.out.println("It is a tie; two or more players with same number of keepers, continue playing.");
 			}
 		}	
 	}
@@ -386,24 +391,32 @@ public class Game {
 		card.playCard(this);
 	}
 
-	//I changed the next 4 methods  on january 1.
+	//I changed the next 4 methods  on january 2.
 	// card specific play methods
 	
 	public void playGoal(CardGoal cardGoal) 
 	{
 	
-		currentgoalcard.clear();
+		
 		for(int i=0; i<cardGoals.size();i++) 
 		{
 			if(cardGoals.get(i).getId()==cardGoal.getId())
 			{
-				currentgoalcard.add(cardGoals.get(i).getKeeper1());
-				currentgoalcard.add(cardGoals.get(i).getKeeper2());
-				checkWin(currentgoalcard);
+				currentgoalcard.clear();
+				if(cardGoal.getNameCard().contains(" keepers (S)"))
+				{
+					checkWinSp(cardGoal);
+				
+				}else
+				{
+					currentgoalcard.add(cardGoals.get(i).getKeeper1());
+					currentgoalcard.add(cardGoals.get(i).getKeeper2());
+					checkWin(currentgoalcard);
+				}
 			}
 		}
 		if(winner==false)
-		{   //Check if card needs to be casted back to card.
+		{   
 			if (this.cardGoal != null) 
 			{
 				discardPile.add(this.cardGoal);
@@ -418,9 +431,7 @@ public class Game {
 		if(cardRule.getWhich()=="keeper")
 		{
 			keeperLimit(cardRule);
-			
-			System.out.println("get into cardRule Keeper");
-		}
+			}
 		ruleArea.playRule(cardRule, discardPile);
 	}
 	public void playKeeper(CardKeeper cardKeeper) 
@@ -433,9 +444,20 @@ public class Game {
 				winner=players.get(turn).getWinPlayer();
 				System.out.println("Player " + players.get(turn).getNickName() + " wins!!!");
 			}
+			else if(cardGoal.getNameCard().contains(" keepers (S)"))
+			{
+				checkWinSp(cardGoal);
+			
+			}
+			
 		}
+		if(winner==false)
+		{
 		players.get(turn).playKeeper(cardKeeper);
+		}
 	}
+	
+
 	
 	public void keeperLimit(CardRule keeplimit)
 	{
