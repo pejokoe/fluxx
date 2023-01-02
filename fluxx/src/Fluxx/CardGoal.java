@@ -51,7 +51,7 @@ public class CardGoal extends Card
 //Basic display method.
 	public String display() 
 	{
-		return "Goal " + this.getNameCard();
+		return " Goal " + this.getNameCard();
 	}
 //Display extended method for both: Card goals composed by card keepers and Special Card Goals.
 	public String display_extended() 

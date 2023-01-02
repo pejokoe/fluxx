@@ -41,6 +41,7 @@ public class UserInteraction {
 	
 	public String wordInput(String instruction) {
 		System.out.println(instruction);
+		System.out.println("Type anything except 1, 2, 3, 4 and 'help' to continue.");
 		return scanner.next();
 	}
 }

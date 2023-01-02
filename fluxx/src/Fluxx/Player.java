@@ -23,8 +23,6 @@ public class Player {
 	
 	private boolean winplayer=false;//To track if the player wins.
 	
-	private Card pick;//Not to sure yet.
-	
 	//Constructor with the two basic instance variables as parameters and initialising the card arrays for each player.
 	public Player(String nickname, int idPlayer) {
 		this.nickname = nickname;
@@ -68,20 +66,6 @@ public class Player {
 		return winplayer;
 	}
 	
-	
-	
-	public void setpick(Card pick)
-	{
-		this.pick=pick;
-	}
-	public Card getPick()
-	{
-		return pick;
-	}
-	public void pickCard()
-	{
-		handCards.add(pick);
-	}
 	public void drawCard(Card card)
 	{
 		handCards.add(card);
@@ -129,19 +113,44 @@ public class Player {
 		return ret;
 	}
 	
+	public String displayKeepers() {
+		String ret = "";
+		for (int i = 0; i < keepers.size(); i++) {
+			ret += String.format(" %d: %s\n", i, keepers.get(i).display());
+		}
+		return ret;
+	}
+	
 	//Method to return the card that the player choose.
 	public Card playCard(UserInteraction ui, int maxPlay) {
 		System.out.printf("\n%s, you must play %d card(s)!\n", nickname, maxPlay);
 		System.out.println("\nYour hand cards are:");
 		System.out.println(displayHand());
-		Card ret = handCards.get(ui.intRange("Choose a card to play by entering its number.\n", 0, handCards.size()));
+		Card ret = handCards.get(ui.intRange("Choose a card to play by entering its number.\n", 0, handCards.size()-1));
 		//I REPLACED THE NEXT LINE FOR A METHOD WICH IS DOING THE SAME BUT IS BEING USEDD FROM ANOTHER CLASSES AS WELL;
 		discardCard(ret);
 		return ret;
 	}
 	
+	public Card discardHand(UserInteraction ui, int discard) {
+		System.out.printf("\n%s, you must discard %d card(s)!\n", nickname, discard);
+		System.out.println("\nYour hand cards are:");
+		System.out.println(displayHand());
+		Card ret = handCards.get(ui.intRange("Choose a card to discard by entering its number.\n", 0, handCards.size()-1));
+		discardCard(ret);
+		return ret;
+	}
+	
+	public Card discardKeeper(UserInteraction ui, int discard) {
+		System.out.printf("\n%s, you must discard %d keeper(s)!\n", nickname, discard);
+		System.out.println("\nYour keepers are:");
+		System.out.println(displayKeepers());
+		Card ret = handCards.get(ui.intRange("Choose a keeper to discard by entering its number.\n", 0, keepers.size()-1));
+		keepers.remove(ret);
+		return ret;
+	}
+	
 	public void playKeeper(CardKeeper cardKeeper) {
-		// keeper limit still needs to be done
 		keepers.add(cardKeeper);
 	}
 	
