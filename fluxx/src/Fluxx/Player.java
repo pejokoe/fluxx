@@ -86,7 +86,7 @@ public class Player {
 	{
 		handCards.add(card);
 	}
-		//ADDED 30-12
+	//ADDED 30-12
 	public void discardCard(Card card)
 	{
 		handCards.remove(card);
@@ -135,7 +135,8 @@ public class Player {
 		System.out.println("\nYour hand cards are:");
 		System.out.println(displayHand());
 		Card ret = handCards.get(ui.intRange("Choose a card to play by entering its number.\n", 0, handCards.size()));
-		handCards.remove(ret);
+		//I REPLACED THE NEXT LINE FOR A METHOD WICH IS DOING THE SAME BUT IS BEING USEDD FROM ANOTHER CLASSES AS WELL;
+		discardCard(ret);
 		return ret;
 	}
 	
