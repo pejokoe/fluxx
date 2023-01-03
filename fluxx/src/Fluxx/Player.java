@@ -4,13 +4,13 @@ package Fluxx;
  * Have a NickName.
  * Check if the player has the 'cardgoal' in play.
  * Manage the card that the player is choosing to play.
-
  */
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player {
+public class Player 
+{
 	//Basic attributes.
 	private int idPlayer;
 	private String nickname;
@@ -19,93 +19,76 @@ public class Player {
 	private List<Card> handCards;
 	private List<CardKeeper> keepers;
 	
-	private List<CardKeeper> currentgoal; //Two Keeper cards.
-	
-	private boolean winplayer=false;//To track if the player wins.
+	//To track if the player wins.
+	private boolean winplayer=false;
 	
 	//Constructor with the two basic instance variables as parameters and initialising the card arrays for each player.
-	public Player(String nickname, int idPlayer) {
+	public Player(String nickname, int idPlayer) 
+	{
 		this.nickname = nickname;
 		this.idPlayer = idPlayer;
 		handCards = new ArrayList<>();
 		keepers = new ArrayList<>();
 	}
+	
 	//Getter for instance variable.
 	public String getNickName()
 	{
 		return nickname;
 	}
+	
 	//Getter for instance variable.
 	public int idPlayer()
 	{
 		return idPlayer;
 	}
+	
 	//Getter for instance variable.
 	public List<CardKeeper> getKeepers(){
 		return keepers;
 	}
 	
+	//Adding card keepers to the ArrayList of keepers of the player.
+	public void playKeeper(CardKeeper cardKeeper) {
+		keepers.add(cardKeeper);
+	}
 	//Getter for instance variable.
 	public List<Card> Handcards()
 	{
 		return handCards;
 	}
+	
 	//Setter for instance variable.
 	public void setHandcards(List<Card> startingHand)
 	{
 		handCards.addAll(startingHand);
 	}
+	
 	//Setter for winner variable.
 	public void winPlayer()
 	{
 		this.winplayer=true;
 	}
+	
 	// Getter for winner variable.
 	public boolean getWinPlayer()
 	{
 		return winplayer;
 	}
 	
+	//Adding a card to the ArrayList in hand of each player.
 	public void drawCard(Card card)
 	{
 		handCards.add(card);
 	}
-	//ADDED 30-12
+	
+	//Removing a card to the ArrayList in hand of each player.
 	public void discardCard(Card card)
 	{
 		handCards.remove(card);
 	}
-	public void setcardgoal(List<CardKeeper> currentgoal)
-	{
-		
-		this.currentgoal=new ArrayList<CardKeeper>();
-	}
-	public List<CardKeeper> getcurrentgoal()
-	{
-		
-		return currentgoal;
-	}
-	//Method to verify if the player has the goal card in play.
-	public boolean accomplishgoal(List<CardKeeper> currentgoal)
-	{
-		int accomplishcount=0;
-		boolean accomplish=false;
-		for (int i=0; i<keepers.size();i++)
-		{
-			for (int j=0; j<currentgoal.size();j++)
-			{
-				if(keepers.get(i).getId()==currentgoal.get(j).getId())
-				{
-					accomplishcount++;
-				}
-			}
-			
-		}
-		if(accomplishcount==2)  accomplish=true;
 	
-		return accomplish;
-	}
-	
+	//Displaying the ArrayList of cards that are in hand of the player.
 	public String displayHand() {
 		String ret = "";
 		for (int i = 0; i < handCards.size(); i++)
@@ -113,6 +96,7 @@ public class Player {
 		return ret;
 	}
 	
+	//Displaying the ArrayList of cards that are in "Keeper List" of the player.
 	public String displayKeepers() {
 		String ret = "";
 		for (int i = 0; i < keepers.size(); i++) {
@@ -127,11 +111,11 @@ public class Player {
 		System.out.println("\nYour hand cards are:");
 		System.out.println(displayHand());
 		Card ret = handCards.get(ui.intRange("Choose a card to play by entering its number.\n", 0, handCards.size()-1));
-		//I REPLACED THE NEXT LINE FOR A METHOD WICH IS DOING THE SAME BUT IS BEING USEDD FROM ANOTHER CLASSES AS WELL;
 		discardCard(ret);
 		return ret;
 	}
 	
+	//When a Limit Hand rule is in play.
 	public Card discardHand(UserInteraction ui, int discard) {
 		System.out.printf("\n%s, you must discard %d card(s)!\n", nickname, discard);
 		System.out.println("\nYour hand cards are:");
@@ -141,6 +125,7 @@ public class Player {
 		return ret;
 	}
 	
+	//When a Limit Keeper rule is in play.
 	public Card discardKeeper(UserInteraction ui, int discard) {
 		System.out.printf("\n%s, you must discard %d keeper(s)!\n", nickname, discard);
 		System.out.println("\nYour keepers are:");
@@ -149,11 +134,4 @@ public class Player {
 		keepers.remove(ret);
 		return ret;
 	}
-	
-	public void playKeeper(CardKeeper cardKeeper) {
-		keepers.add(cardKeeper);
-	}
-	
-	//For special goals.
-	
 }
