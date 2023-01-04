@@ -208,8 +208,8 @@ public class Game {
 			drawPhase(redraw, draw);
 			prePhase();
 			playPhase();
-			discardHand();
-			discardKeepers();
+			discardPhase("hand");
+			discardPhase("keeper");
 			turn = (turn + 1) % players.size();
 		}
 	}
@@ -353,6 +353,13 @@ public class Game {
 	public void playRule(CardRule cardRule) 
 	{
 		ruleArea.playRule(cardRule, discardPile);
+		
+		// apply new rule immediately
+		if (cardRule.getWhich() == "keeper") {
+			discardImmediately("keeper");
+		} else if (cardRule.getWhich() == "hand") {
+			discardImmediately("hand");
+		}
 	}
 	public void playKeeper(CardKeeper cardKeeper) {
 		players.get(turn).playKeeper(cardKeeper);
@@ -418,34 +425,62 @@ public class Game {
 	
 	
 	// discarding hand cards and keepers surpassing the corresponding limit
-	public void discardHand() {
-		int limit = ruleArea.getLimit("hand");
+	public void discardPhase(String s) {
+		int limit = ruleArea.getLimit(s);
 		int noCards = 0;
 		if (limit != -1) {
-			noCards = players.get(turn).Handcards().size();
+			if (s == "hand") {
+				noCards = players.get(turn).Handcards().size();
+			} else if (s == "keeper") {
+				noCards = players.get(turn).getKeepers().size();
+			}
 			int discard = noCards - limit;
 			while(discard > 0) {
 				Card card = null;
-					card = players.get(turn).discardHand(ui, discard);
+				if (s == "hand") {
+					card = players.get(turn).discardHand(ui, discard);}
+				else if (s == "keeper") {
+					card = players.get(turn).discardKeeper(ui, discard);
+				}
 				discardPile.add(card);
 				discard --;
 			}
 		}
-		System.out.printf("\n%s, your turn is over.\n\n\n", players.get(turn).getNickName());
+		if (s == "keeper") {
+			System.out.printf("\n%s, your turn is over.\n\n\n", players.get(turn).getNickName());
+		}
 	}
 	
-	public void discardKeepers() {
-		int limit = ruleArea.getLimit("keeper");
+	// method to apply limit rules immediately for all players except the player
+	// whose turn it currently is
+	public void discardImmediately(String s) {
+		int limit = 0;
+		if (s == "hand") {
+			limit = ruleArea.getLimit("hand");
+		} else if (s == "keeper") {
+			limit = ruleArea.getLimit("keeper");
+		}
 		int noCards = 0;
 		int discard = 0;
+		Card card = null;
 		if (limit != -1) {
 			for (Player player : players) {
-				noCards = player.getKeepers().size();
-				discard = noCards - limit;
-				while (discard > 0) {
-					Card card = player.discardKeeper(ui, discard);
-					discardPile.add(card);
-					discard--;
+				if (player != players.get(turn)) {
+					if (s == "hand") {
+						noCards = player.Handcards().size();
+					} else if (s == "keeper") {
+						noCards = player.getKeepers().size();
+					}
+					discard = noCards - limit;
+					while (discard > 0) {
+						if (s == "hand") {
+							card = player.discardHand(ui, discard);
+						} else if (s == "keeper") {
+							card = player.discardKeeper(ui, discard);
+						}
+						discardPile.add(card);
+						discard--;
+					}
 				}
 			}
 		}
