@@ -232,11 +232,10 @@ public class Game {
 			if (deck.isEmpty()) {
 				shuffle(discardPile); //Simulation of real game, when the deck is empty, the discardPile is used to continue playing.
 				deck = discardPile;
-				discardPile.clear();
-			} else {
-				players.get(turn).drawCard(deck.get(0));
-				deck.remove(0);
+				discardPile =  new ArrayList<>();
 			}
+			players.get(turn).drawCard(deck.get(0));
+			deck.remove(0);
 			draw--;
 		}
 	}

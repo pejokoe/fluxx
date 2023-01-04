@@ -1,3 +1,4 @@
+package Fluxx;
 /* This class will be in charge of representing the Goal card.
  * Each GoalCard will be composed by two 'cardkeepers'.
  * Another type of Goal card is managed trough using polimorphism as having to constructor 
