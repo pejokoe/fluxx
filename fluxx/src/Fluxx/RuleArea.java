@@ -24,10 +24,14 @@ public class RuleArea {
 	
 	// return limit, -1 if no limit set
 	public int getLimit(String which) {
+		
 		if (limits.get(which) != null) {
 			return limits.get(which).getLimit();
 		} else {
-			return -1;
+			if (which == "keeper" || which == "hand")
+				return -1;
+			else 
+				return 1;
 		}
 	}
 	
@@ -37,13 +41,13 @@ public class RuleArea {
 		if (limits.get("draw") == null) {
 			ret += "1 card\n" ;
 		} else {
-			ret += String.format("%s", limits.get("draw").getLimit()) + " cards\n";
+			ret += String.format("%s cards\n", limits.get("draw").getLimit());
 		}
 		ret += " Keeper limit: ";
 		if (limits.get("keeper") == null) {
 			ret += "no limit\n" ;
 		} else {
-			ret += String.format("%s", limits.get("keeper").getLimit()) + " keepers\n";
+			ret += String.format("%s keepers\n", limits.get("keeper").getLimit());
 		}
 		ret += " Play: ";
 		if (limits.get("play") == null) {
@@ -51,11 +55,11 @@ public class RuleArea {
 		} else {
 			if(limits.get("play").getLimit()==0)
 			{
-				ret += String.format("%s")+" cards\n";
+				ret += String.format("all cards\n");
 			}
 			else
 			{
-				ret += String.format("%s", limits.get("play").getLimit()) + " cards\n";
+				ret += String.format("%s cards\n", limits.get("play").getLimit()) + " cards\n";
 			}
 			
 		}

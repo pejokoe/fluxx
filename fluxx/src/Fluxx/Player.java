@@ -92,7 +92,7 @@ public class Player
 	public String displayHand() {
 		String ret = "";
 		for (int i = 0; i < handCards.size(); i++)
-			ret += String.format(" %d: %s\n", i, handCards.get(i).display());
+			ret += String.format(" %d:%s\n", i, handCards.get(i).display());
 		return ret;
 	}
 	
@@ -100,7 +100,7 @@ public class Player
 	public String displayKeepers() {
 		String ret = "";
 		for (int i = 0; i < keepers.size(); i++) {
-			ret += String.format(" %d: %s\n", i, keepers.get(i).display());
+			ret += String.format(" %d:%s\n", i, keepers.get(i).display());
 		}
 		return ret;
 	}
@@ -110,7 +110,7 @@ public class Player
 		System.out.printf("\n%s, you must play %d card(s)!\n", nickname, maxPlay);
 		System.out.println("\nYour hand cards are:");
 		System.out.println(displayHand());
-		Card ret = handCards.get(ui.intRange("Choose a card to play by entering its number.\n", 0, handCards.size()-1));
+		Card ret = handCards.get(ui.intRange("Choose a card to play by entering its number.\n ", 0, handCards.size()-1));
 		discardCard(ret);
 		return ret;
 	}
@@ -130,7 +130,7 @@ public class Player
 		System.out.printf("\n%s, you must discard %d keeper(s)!\n", nickname, discard);
 		System.out.println("\nYour keepers are:");
 		System.out.println(displayKeepers());
-		Card ret = handCards.get(ui.intRange("Choose a keeper to discard by entering its number.\n", 0, keepers.size()-1));
+		Card ret = keepers.get(ui.intRange("Choose a keeper to discard by entering its number.\n", 0, keepers.size()-1));
 		keepers.remove(ret);
 		return ret;
 	}

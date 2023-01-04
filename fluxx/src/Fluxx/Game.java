@@ -40,7 +40,7 @@ public class Game {
 	int turn = 0;
 
 	// user interaction
-	private UserInteraction ui = new UserInteraction();
+	private UserInteraction ui = new UserInteraction(this);
 
 	/* The card Goals are special cards, because they are formed by list of card keepers (decision taken to keep the scalability 
 	 * feature of the software). So, there is some attributes that will be managed as ArrayList.
@@ -102,7 +102,8 @@ public class Game {
 		deck.add(new CardRule("play", 2, cardIdGenerator++, "Play 2"));
 		deck.add(new CardRule("play", 3, cardIdGenerator++, "Play 3"));
 		deck.add(new CardRule("play", 4, cardIdGenerator++, "Play 4"));
-		deck.add(new CardRule("play", 0, cardIdGenerator++, "Play all"));
+		deck.add(new CardRule("play", 0, cardIdGenerator++, "Play all")); /* special case play all, uses 
+																			 elsewise unused play limit 0 */
 
 		deck.add(new CardRule("hand", 0, cardIdGenerator++, "Hand limit 0"));
 		deck.add(new CardRule("hand", 1, cardIdGenerator++, "Hand limit 1"));
@@ -204,8 +205,10 @@ public class Game {
 	// game routine
 	private void start() {
 		tutorial();
+		boolean redraw = false;
+		int draw = 1;
 		while (!winner) {
-			drawPhase();
+			drawPhase(redraw, draw);
 			prePhase();
 			playPhase();
 			discardPhase("hand");
@@ -265,23 +268,23 @@ public class Game {
 	}
 	
 	private void tutorial() {
-		String toPrint = "\nTutorial:\nWhen it's your turn, type 'help' to display all input options.\n"
-				+ "All inputs displayed by calling 'help' are allowed too.\n"
-				+ "Type anything else to continue with your turn.\n";
+		String toPrint = "\nTutorial:\nAt all times, typing r shows the rules, k the keepers and g the goals.\n"
+				+ "Selecting cards will be done by typing the according number.\n"
+				+ "Typing 'help' will display all possible input options\n";
 		System.out.println(toPrint);
 	}
 	
 	//Managing the draw process of the game.
-	private void drawPhase() {
-		int draw = ruleArea.getLimit("draw");
-		if (draw == -1) {
-			draw = 1;
+	private void drawPhase(boolean redraw, int draw) {
+		if (!redraw) {
+			draw = ruleArea.getLimit("draw");
+		} else {
+			System.out.printf("Due to a rule change %d more card(s) will be drawn.\n", draw);
 		}
 		while (draw > 0) {
 			if (deck.isEmpty()) {
 				shuffle(discardPile); //Simulation of real game, when the deck is empty, the discardPile is used to continue playing.
 				deck = discardPile;
-				//discardPile = null;
 				discardPile.clear();
 			} else {
 				players.get(turn).drawCard(deck.get(0));
@@ -303,45 +306,24 @@ public class Game {
 	private String processWordInput(String input) {
 		String info = "";
 		switch (input) {
-		case "1":
-			info = "Keepers: \n";
-			for (Player player : players) {
-				if (player.getKeepers().isEmpty()) {
-					info += " " + player.getNickName() + " has no keepers.\n";
-				} else {
-					info += " " + player.getNickName() + "'s keepers: \n";
-					for (CardKeeper keeper : player.getKeepers()) {
-						info += " " + keeper.display() + "\n";
-					}
-				}
-			}
+		case "k":
+			info = displayKeepers();
 			input = ui.wordInput(info);
 			break;
-		case "2":
-			info = "Current goal:\n";
-			if (cardGoal != null) {
-				info += cardGoal.display();
-			} else {
-				info += " No goal in play yet.\n";
-			}
+		case "g":
+			info = displayGoal();
 			input = ui.wordInput(info);
 			break;
-		case "3":
-			info = "Current rules:\n";
-			info += ruleArea.display();
+		case "r":
+			info = displayRules();
 			input = ui.wordInput(info);
 			break;
-		case "4":
-			info = "Your hand cards:\n";
-			info += players.get(turn).displayHand();
+		case "h":
+			info = displayHand();
 			input = ui.wordInput(info);
 			break;
 		case "help":
-			info = "Type '1' to display all the keepers on the playing field.\n"
-					+ "Type '2' to display the current goal.\n"
-					+ "Type '3' to display all current rules.\n"
-					+ "Type '4' to display your hand cards.\n"
-					+ "Type 'help' to display all input options.\n";
+			info = displayHelp();
 			input = ui.wordInput(info);
 			break;
 		default:
@@ -352,11 +334,10 @@ public class Game {
 	
 	//After checking the help displayers, the player will be able to play their cards.
 	private void playPhase() {
+		int draw = ruleArea.getLimit("draw");
 		int maxPlayRule = ruleArea.getLimit("play");
 		int maxPlayHandcards = players.get(turn).Handcards().size();
-		if (maxPlayRule == -1) {
-			maxPlayRule = 1;
-		} else if (maxPlayRule == 0) { // case play rule == "play all"
+		if (maxPlayRule == 0) { // case play rule == "play all"
 			maxPlayRule = maxPlayHandcards + 1; /* this way, maxPlay will evaluate to maxPlayHands
 													and all hand cards will be played */
 		}
@@ -365,11 +346,22 @@ public class Game {
 			Card card = players.get(turn).playCard(ui, maxPlay);
 			playCard(card);
 			maxPlay--;
+			int draw_new = ruleArea.getLimit("draw"); // new rule cards taking immediate effects
+			int play_new = ruleArea.getLimit("play"); // new rule cards taking immediate effects
+			if (draw_new > draw) {
+				boolean redraw = true;
+				drawPhase(redraw, draw_new-draw);
+				draw = draw_new;
+			}
+			if (play_new > maxPlayRule) {
+				maxPlay += (play_new - maxPlayRule);
+				maxPlay = Math.min(maxPlay, players.get(turn).Handcards().size());
+			}
 		}	
 	}
 		
 
-	// Generic play card method, uses dynamic lookup
+	// Generic play card method, card.playCard() then uses dynamic lookup
 	public void playCard(Card card) 
 	{
 		System.out.printf("You played card: %s\n", card.display());
@@ -419,10 +411,14 @@ public class Game {
 	}
 	
 	public void discardPhase(String s) {
-		int handLimit = ruleArea.getLimit(s);
-		if (handLimit != -1) {
-			int noHandCards = players.get(turn).Handcards().size();
-			int discard = noHandCards - handLimit;
+		int limit = ruleArea.getLimit(s);
+		int noCards = 0;
+		if (limit != -1) {
+			if (s == "hand") 
+				noCards = players.get(turn).Handcards().size();
+			else if (s == "keeper")
+				noCards = players.get(turn).getKeepers().size();
+			int discard = noCards - limit;
 			while(discard > 0) {
 				Card card = null;
 				if (s == "hand") {
@@ -437,7 +433,49 @@ public class Game {
 		if (s == "keeper") {
 			System.out.printf("%s, your turn is over.\n\n\n", players.get(turn).getNickName());
 		}
-		
+	}
+	public String displayKeepers(){
+		String info = "Keepers: \n";
+		for (Player player : players) {
+			if (player.getKeepers().isEmpty()) {
+				info += " " + player.getNickName() + " has no keepers.\n";
+			} else {
+				info += " " + player.getNickName() + "'s keepers: \n";
+				for (CardKeeper keeper : player.getKeepers()) {
+					info += " " + keeper.display() + "\n";
+				}
+			}
+		}
+		return info;
 	}
 	
+	public String displayGoal() {
+		String info = "Current goal:\n";
+		if (cardGoal != null) {
+			info += cardGoal.display();
+		} else {
+			info += " No goal in play yet.\n";
+		}
+		return info;
+	}
+	
+	public String displayRules() {
+		String info = "Current rules:\n";
+		info += ruleArea.display();
+		return info;
+	}
+	
+	public String displayHand() {
+		String info = "Your hand cards:\n";
+		info += players.get(turn).displayHand();
+		return info;
+	}
+	
+	public String displayHelp() {
+		return "Type 'k' to display all the keepers on the playing field.\n"
+				+ "Type 'g' to display the current goal.\n"
+				+ "Type 'r' to display all current rules.\n"
+				+ "Type 'h' to display your hand cards.\n"
+				+ "Type 'help' to display all input options.\n";
+	}
 }
