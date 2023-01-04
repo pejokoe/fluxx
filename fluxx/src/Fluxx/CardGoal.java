@@ -1,5 +1,3 @@
-package Fluxx;
-
 /* This class will be in charge of representing the Goal card.
  * Each GoalCard will be composed by two 'cardkeepers'.
  * Another type of Goal card is managed trough using polimorphism as having to constructor 
@@ -22,8 +20,10 @@ public class CardGoal extends Card
 		this.keeper1 = keeper1;
 		this.keeper2 = keeper2;
 	}
+	
 	//Second constructor for special card goals.
-	public CardGoal(String name, int idCard, int special) {
+	public CardGoal(String name, int idCard, int special) 
+	{
 		super(idCard, name);
 		this.special=special;
 	}
@@ -46,7 +46,7 @@ public class CardGoal extends Card
 		return special;
 	}
 	
-	//Method used hen a Goal card is played in class game.
+	//Method used when a Goal card is played in class game.
 	public void playCard(Game game)
 	{
 		game.playGoal(this);
@@ -63,10 +63,10 @@ public class CardGoal extends Card
 		{
 			return " Goal " + this.getNameCard();
 		}
-		
 	}
 	
-	//Display extended method for both: Card goals composed by card keepers and Special Card Goals.
+	//Display extended method for both: Card goals composed by card keepers and Special Card Goals, for implementing 
+	// more interface features this will be useful.
 	public String display_extended() 
 	{
 		if(this.getNameCard().contains(" keepers (S)"))
