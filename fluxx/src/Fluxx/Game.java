@@ -307,6 +307,11 @@ public class Game {
 				boolean redraw = true;
 				drawPhase(redraw, draw_new-draw);
 				draw = draw_new;
+				if (maxPlayRule > maxPlayHandcards) { // adapt maxPlay in case more cards become
+													  // available then at beginning of turn
+					maxPlay = Math.min(maxPlayRule, players.get(turn).Handcards().size()) - (maxPlayHandcards - maxPlay);
+					
+				}
 			}
 			// immediately implementing the new play rule
 			if (play_new != maxPlayRule) {
