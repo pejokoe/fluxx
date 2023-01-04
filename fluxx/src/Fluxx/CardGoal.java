@@ -57,7 +57,7 @@ public class CardGoal extends Card
 	{
 		if(this.getNameCard().contains(" keepers (S)"))
 		{
-			return "Special goal" + this.getNameCard();
+			return "Special goal " + this.getNameCard();
 		}
 		else
 		{
