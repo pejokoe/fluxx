@@ -454,11 +454,14 @@ public class Game {
 	// method to apply limit rules immediately for all players except the player
 	// whose turn it currently is
 	public void discardImmediately(String s) {
+		
 		int limit = 0;
 		if (s == "hand") {
 			limit = ruleArea.getLimit("hand");
+			System.out.println("Some players have to discard hand cards according to the new rules.");
 		} else if (s == "keeper") {
 			limit = ruleArea.getLimit("keeper");
+			System.out.println("Some players have to discard keeper cards according to the new rules.");
 		}
 		int noCards = 0;
 		int discard = 0;
@@ -489,7 +492,6 @@ public class Game {
 	
 	// display methods for all "areas"
 	public String displayKeepers(){
-		System.out.println("Some players have do discard keepers.");
 		String info = "Keepers: \n";
 		for (Player player : players) {
 			if (player.getKeepers().isEmpty()) {
