@@ -215,25 +215,7 @@ public class Game {
 	}
 
 
-	/*Method to check if the current goal is being accomplish for some of the players.
-	 * It communicates with the method 'accomplishgoal' in the class Player.
-	 */
-//	public void checkWin(List<CardKeeper> currentgoal) {
-//
-//		for (int i = 0; i < players.size(); i++) {
-//			if (players.get(i).accomplishgoal(currentgoal))
-//			{
-//				//The next 2 lines maybe we could just manage the boolean winner in this class.
-//				players.get(i).winPlayer();
-//				winner=players.get(i).getWinPlayer();
-//				System.out.println("Player " + players.get(i).getNickName() + " wins!!!");
-//				break;
-//			}
-//
-//		}
-//
-//	}
-	//Method to check if the current goal was accomplished, but in the case of having an special card goal.
+		//Method to check if the current goal was accomplished, but in the case of having an special card goal.
 	public void checkWinSp() {
 		int count=0;
 		int max=cardGoal.special();
@@ -299,7 +281,8 @@ public class Game {
 			if (deck.isEmpty()) {
 				shuffle(discardPile); //Simulation of real game, when the deck is empty, the discardPile is used to continue playing.
 				deck = discardPile;
-				discardPile = null;
+				//discardPile = null;
+				discardPile.clear();
 			} else {
 				players.get(turn).drawCard(deck.get(0));
 				deck.remove(0);
@@ -393,42 +376,8 @@ public class Game {
 		card.playCard(this);
 	}
 
-	//I changed the next 4 methods  on january 2.
+	
 	// card specific play methods
-	
-	
-	
-//	public void playGoal(CardGoal cardGoal) 
-//	{
-//	
-//		
-//		for(int i=0; i<cardGoals.size();i++) 
-//		{
-//			if(cardGoals.get(i).getId()==cardGoal.getId())
-//			{
-//				currentgoalcard.clear();
-//				if(cardGoal.getNameCard().contains(" keepers (S)"))
-//				{
-//					checkWinSp(cardGoal);
-//				
-//				}else
-//				{
-//					currentgoalcard.add(cardGoals.get(i).getKeeper1());
-//					currentgoalcard.add(cardGoals.get(i).getKeeper2());
-//					checkWin(currentgoalcard);
-//				}
-//			}
-//		}
-//		if(winner==false)
-//		{   
-//			if (this.cardGoal != null) 
-//			{
-//				discardPile.add(this.cardGoal);
-//			}
-//			this.cardGoal = cardGoal; 
-//		}
-//	}
-	
 	public void playGoal(CardGoal cardGoal) {
 		if (this.cardGoal != null) {
 			discardPile.add(this.cardGoal);
@@ -457,25 +406,7 @@ public class Game {
 		ruleArea.playRule(cardRule, discardPile);
 	}
 	
-//	public void playKeeper(CardKeeper cardKeeper) 
-//	{
-//		players.get(turn).playKeeper(cardKeeper);
-//		if(cardGoal!=null)
-//		{
-//			if(players.get(turn).getKeepers().containsAll(currentgoalcard)==true)
-//			{
-//				players.get(turn).winPlayer();
-//				winner=players.get(turn).getWinPlayer();
-//				System.out.println("Player " + players.get(turn).getNickName() + " wins!!!");
-//			}
-//			else if(cardGoal.getNameCard().contains(" keepers (S)"))
-//			{
-//				checkWinSp(cardGoal);
-//			
-//			}
-//			
-//		}
-//	}
+
 	public void playKeeper(CardKeeper cardKeeper) {
 		players.get(turn).playKeeper(cardKeeper);
 		if (cardGoal != null) {
@@ -508,20 +439,5 @@ public class Game {
 		}
 		
 	}
-	// card specific play methods
-	/*public void playRule(CardRule cardRule) {
-		ruleArea.playRule(cardRule, discardPile);
-	}
-
-	public void playKeeper(CardKeeper cardKeeper) {
-		players.get(turn).playKeeper(cardKeeper);
-	}
-
-	public void playGoal(CardGoal cardGoal) {
-		if (this.cardGoal != null) {
-			discardPile.add(this.cardGoal);
-		}
-		this.cardGoal = cardGoal;
-	}*/
+	
 }
-
