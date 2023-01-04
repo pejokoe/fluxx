@@ -49,7 +49,15 @@ public class RuleArea {
 		if (limits.get("play") == null) {
 			ret += "1 card\n" ;
 		} else {
-			ret += String.format("%s", limits.get("play").getLimit()) + " cards\n";
+			if(limits.get("play").getLimit()==0)
+			{
+				ret += String.format("%s")+" cards\n";
+			}
+			else
+			{
+				ret += String.format("%s", limits.get("play").getLimit()) + " cards\n";
+			}
+			
 		}
 		ret += " Hand cards limit: ";
 		if (limits.get("hand") == null) {
