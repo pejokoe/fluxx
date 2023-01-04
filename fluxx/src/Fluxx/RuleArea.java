@@ -13,7 +13,7 @@ public class RuleArea {
 		limits.put("hand", null);
 	}
 	
-	// set specific limit
+	// add a rule to the rule area by playing the card
 	public void playRule(CardRule cardRule, List<Card> discardedPile) {
 		String which = cardRule.getWhich();
 		if (limits.get(which) != null) {
@@ -22,7 +22,7 @@ public class RuleArea {
 		limits.replace(cardRule.getWhich(), cardRule);
 	}
 	
-	// return limit, -1 if no limit set
+	// return a processable value for the requested limit
 	public int getLimit(String which) {
 		
 		if (limits.get(which) != null) {
@@ -35,6 +35,7 @@ public class RuleArea {
 		}
 	}
 	
+	// extensive display method to display all rules intelligibly
 	public String display() {
 		String ret = "";
 		ret += " Draw: ";

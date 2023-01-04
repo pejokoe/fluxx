@@ -11,11 +11,13 @@ public class UserInteraction {
 		this.game = game;
 	}
 	
+	// user nickname input
 	public String nickname(int player) {
 		System.out.printf("Player %d, please give your nickname:\n", player);
 		return scanner.next();
 	}
 	
+	// user int input with given allowed range
 	public int intRange(String instruction, int min, int max) {
 		int input = intSelection(instruction);
 		while(min > input || max < input) {
@@ -25,6 +27,7 @@ public class UserInteraction {
 		return input;
 	}
 	
+	// user int input, k, r, g, h, help also allowed
 	public int intSelection(String instruction) {
 		boolean isInt = false;
 		int input = 0;
@@ -52,6 +55,7 @@ public class UserInteraction {
 		return input;
 	}
 	
+	// string input
 	public String wordInput(String instruction) {
 		System.out.println(instruction);
 		System.out.println("Type anything except k, g, r, h and 'help' to continue.");

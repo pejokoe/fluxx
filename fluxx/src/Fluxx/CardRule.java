@@ -10,7 +10,7 @@ public class CardRule extends Card {
 		this.limit = limit;
 	}
 	
-	// 
+	
 	public void playCard(Game game) {
 		game.playRule(this);
 	}
@@ -23,10 +23,12 @@ public class CardRule extends Card {
 		return which;
 	}
 	
+	// regular display method
 	public String display() {
 		return " Rule " + this.getNameCard();
 	}
 	
+	// extended display method
 	public String display_extended() {
 		return "This is the rule card '" + this.getNameCard() + "'. Playing it "
 				+ "will change the given rule to the given number.\n";

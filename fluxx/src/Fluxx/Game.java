@@ -46,7 +46,6 @@ public class Game {
 	 * feature of the software). So, there is some attributes that will be managed as ArrayList.
 	 */
 	private List<CardGoal> cardGoals;// Total list of all the card goals existing in the game.
-	private List<CardKeeper> currentgoalcard; // The current goal card. It is a combination of two keeper cards.
 
 	//Constructor with not parameters.
 	public Game() {
@@ -55,8 +54,7 @@ public class Game {
 		discardPile = new ArrayList<>();
 		players = new ArrayList<>();
 		ruleArea = new RuleArea();
-		cardGoals = new ArrayList<CardGoal>();		
-		currentgoalcard = new ArrayList<CardKeeper>();
+		cardGoals = new ArrayList<CardGoal>();
 		
 		//Starting the gaming process.
 		initPlayers();
@@ -130,9 +128,8 @@ public class Game {
 		
 		//Special goals cards.
 		ArrayList<CardGoal> cardSGoals = new ArrayList<>();
-		for(int i=5; i<=10; i=i+5)
-		{
-			cardSGoals.add(new CardGoal( i+" keepers (S)", cardIdGenerator++,i));	
+		for (int i = 5; i <= 10; i = i + 5) {
+			cardSGoals.add(new CardGoal(i + " keepers (S)", cardIdGenerator++, i));
 		}
 		
 		deck.addAll(cardSGoals);
@@ -211,58 +208,12 @@ public class Game {
 			drawPhase(redraw, draw);
 			prePhase();
 			playPhase();
-			discardPhase("hand");
-			discardPhase("keeper");
+			discardHand();
+			discardKeepers();
 			turn = (turn + 1) % players.size();
 		}
 	}
 
-
-		//Method to check if the current goal was accomplished, but in the case of having an special card goal.
-	public void checkWinSp() {
-		int count=0;
-		int max=cardGoal.special();
-		int countwin=0;
-		Player temp = null;
-
-		for (int i = 0; i < players.size(); i++) 
-		{
-			if (players.get(i).getKeepers().size()>=max) 
-			{
-				if(players.get(i).getKeepers().size()>max)
-				{//To obtain the max number of card keepers between the players that have more than # keeper cards.
-					max=players.get(i).getKeepers().size();
-					
-				}
-			count++; //To count the number of players that have more than the card keepers defined in th goal.
-			}
-		}		
-		if(count==players.size())
-		{//Case: accomplish the goal, so time to choose the one with more keeper cards.
-			for (int i = 0; i < players.size(); i++) 
-			{
-				if (players.get(i).getKeepers().size()==max) 		
-				{
-					countwin++;
-					temp=players.get(i);
-				}
-				
-			}	
-
-			if(countwin==1)
-			{
-				temp.winPlayer();
-				winner=temp.getWinPlayer();
-				System.out.println("Player " + temp.getNickName() + " wins!!!");
-				System.exit(0);
-			}
-			else
-			{
-				System.out.println("It is a tie; two or more players with same number of keepers, continue playing.");
-			}
-		}	
-	}
-	
 	//Shuffling the cards.
 	private void shuffle(List<Card> toShuffle) {
 		Collections.shuffle(toShuffle);
@@ -345,23 +296,30 @@ public class Game {
 		} else {
 			maxPlay = Math.min(maxPlayRule, maxPlayHandcards);
 		}
-		while (maxPlay > 0) {
+		while (maxPlay > 0) { // play cards one by one, as long as required
 			Card card = players.get(turn).playCard(ui, maxPlay);
 			playCard(card);
 			maxPlay--;
 			int draw_new = ruleArea.getLimit("draw"); // new rule cards taking immediate effects
 			int play_new = ruleArea.getLimit("play"); // new rule cards taking immediate effects
+			// immediately implementing the new draw rule
 			if (draw_new > draw) {
 				boolean redraw = true;
 				drawPhase(redraw, draw_new-draw);
 				draw = draw_new;
 			}
+			// immediately implementing the new play rule
 			if (play_new != maxPlayRule) {
 				if (play_new == 0) {
 					maxPlay = players.get(turn).Handcards().size();
 				} else {
-					if (maxPlayRule == 0) maxPlayRule = maxPlayHandcards;
-					maxPlay += (play_new - maxPlayRule);
+					if (maxPlayRule == 0) {
+						maxPlayRule = maxPlayHandcards; // take into respect the number of cards
+														// initially allowed to be played in the case 
+														// of "play all"
+					}
+					maxPlay += (play_new - maxPlayRule);// adapt maxPlay, taking no. of
+														// already played cards and new rule into account
 					maxPlay = Math.min(maxPlay, players.get(turn).Handcards().size());
 				}
 				System.out.printf("A new play rule becomes effective.");
@@ -392,24 +350,10 @@ public class Game {
 			checkWin();
 		}
 	}
-	
-	public void checkWin() {
-		CardKeeper keeper1 = cardGoal.getKeeper1();
-		CardKeeper keeper2 = cardGoal.getKeeper2();
-		for (Player player : players) {
-			if (player.getKeepers().contains(keeper1) && player.getKeepers().contains(keeper2)) {
-				winner = true;
-				System.out.println("GAME OVER\nPlayer " + player.getNickName() + " wins!!!");
-				System.exit(0);
-			}
-		}
-	}
 	public void playRule(CardRule cardRule) 
 	{
 		ruleArea.playRule(cardRule, discardPile);
 	}
-	
-
 	public void playKeeper(CardKeeper cardKeeper) {
 		players.get(turn).playKeeper(cardKeeper);
 		if (cardGoal != null) {
@@ -421,31 +365,96 @@ public class Game {
 		}
 	}
 	
-	public void discardPhase(String s) {
-		int limit = ruleArea.getLimit(s);
+	
+	// Method called after playing a new keeper or a new regular goal
+	public void checkWin() {
+		CardKeeper keeper1 = cardGoal.getKeeper1();
+		CardKeeper keeper2 = cardGoal.getKeeper2();
+		for (Player player : players) {
+			if (player.getKeepers().contains(keeper1) && player.getKeepers().contains(keeper2)) {
+				winner = true;
+				System.out.println("GAME OVER\nPlayer " + player.getNickName() + " wins!!!");
+				System.exit(0);
+			}
+		}
+	}
+	
+	// Method to check if the current goal was accomplished, but in the case of
+	// having an special card goal.
+	public void checkWinSp() {
+		int count = 0;
+		int max = cardGoal.special();
+		int countwin = 0;
+		Player temp = null;
+
+		for (int i = 0; i < players.size(); i++) {
+			if (players.get(i).getKeepers().size() >= max) {
+				if (players.get(i).getKeepers().size() > max) {// To obtain the max number of card keepers between the
+																// players that have more than # keeper cards.
+					max = players.get(i).getKeepers().size();
+
+				}
+				count++; // To count the number of players that have more than the card keepers defined
+							// in th goal.
+			}
+		}
+		if (count == players.size()) {// Case: accomplish the goal, so time to choose the one with more keeper cards.
+			for (int i = 0; i < players.size(); i++) {
+				if (players.get(i).getKeepers().size() == max) {
+					countwin++;
+					temp = players.get(i);
+				}
+
+			}
+
+			if (countwin == 1) {
+				System.out.println("GAME OVER\nPlayer " + temp.getNickName() + " wins!!!");
+				System.exit(0);
+			} else {
+				System.out.println("It is a tie; two or more players with same number of keepers, continue playing.");
+			}
+		}
+	}
+	
+	
+	// discarding hand cards and keepers surpassing the corresponding limit
+	public void discardHand() {
+		int limit = ruleArea.getLimit("hand");
 		int noCards = 0;
 		if (limit != -1) {
-			if (s == "hand") 
-				noCards = players.get(turn).Handcards().size();
-			else if (s == "keeper")
-				noCards = players.get(turn).getKeepers().size();
+			noCards = players.get(turn).Handcards().size();
 			int discard = noCards - limit;
 			while(discard > 0) {
 				Card card = null;
-				if (s == "hand") {
 					card = players.get(turn).discardHand(ui, discard);
-				} else if (s == "keeper") {
-					card = players.get(turn).discardKeeper(ui, discard); 
-				}
 				discardPile.add(card);
 				discard --;
 			}
 		}
-		if (s == "keeper") {
-			System.out.printf("\n%s, your turn is over.\n\n\n", players.get(turn).getNickName());
+		System.out.printf("\n%s, your turn is over.\n\n\n", players.get(turn).getNickName());
+	}
+	
+	public void discardKeepers() {
+		int limit = ruleArea.getLimit("keeper");
+		int noCards = 0;
+		int discard = 0;
+		if (limit != -1) {
+			for (Player player : players) {
+				noCards = player.getKeepers().size();
+				discard = noCards - limit;
+				while (discard > 0) {
+					Card card = player.discardKeeper(ui, discard);
+					discardPile.add(card);
+					discard--;
+				}
+			}
 		}
 	}
+	
+	
+	// display methods for all "areas"
 	public String displayKeepers(){
+		System.out.println("Some players have do discard keepers.");
 		String info = "Keepers: \n";
 		for (Player player : players) {
 			if (player.getKeepers().isEmpty()) {
