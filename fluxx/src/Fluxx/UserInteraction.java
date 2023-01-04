@@ -41,6 +41,8 @@ public class UserInteraction {
 					System.out.println(game.displayRules());
 				} else if (s.equals("g")) {
 					System.out.println(game.displayGoal());
+				} else if (s.equals("h")) {
+					System.out.println(game.displayHand());
 				} else if (s.equals("help")) {
 					System.out.println(game.displayHelp());
 				}

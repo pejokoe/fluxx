@@ -254,6 +254,7 @@ public class Game {
 				temp.winPlayer();
 				winner=temp.getWinPlayer();
 				System.out.println("Player " + temp.getNickName() + " wins!!!");
+				System.exit(0);
 			}
 			else
 			{
@@ -268,7 +269,7 @@ public class Game {
 	}
 	
 	private void tutorial() {
-		String toPrint = "\nTutorial:\nAt all times, typing r shows the rules, k the keepers and g the goals.\n"
+		String toPrint = "\nTutorial:\nAt all times, typing r shows the rules, k the keepers, g the goals and h your hand cards.\n"
 				+ "Selecting cards will be done by typing the according number.\n"
 				+ "Typing 'help' will display all possible input options\n";
 		System.out.println(toPrint);
@@ -279,7 +280,7 @@ public class Game {
 		if (!redraw) {
 			draw = ruleArea.getLimit("draw");
 		} else {
-			System.out.printf("Due to a rule change %d more card(s) will be drawn.\n", draw);
+			System.out.printf("Due to a rule change, %d more card(s) will be drawn.\n", draw);
 		}
 		while (draw > 0) {
 			if (deck.isEmpty()) {
@@ -337,12 +338,14 @@ public class Game {
 		int draw = ruleArea.getLimit("draw");
 		int maxPlayRule = ruleArea.getLimit("play");
 		int maxPlayHandcards = players.get(turn).Handcards().size();
+		int maxPlay = 0;
 		if (maxPlayRule == 0) { // case play rule == "play all"
-			maxPlayRule = maxPlayHandcards + 1; /* this way, maxPlay will evaluate to maxPlayHands
+			maxPlay = maxPlayHandcards; /* this way, maxPlay will evaluate to maxPlayHands
 													and all hand cards will be played */
+		} else {
+			maxPlay = Math.min(maxPlayRule, maxPlayHandcards);
 		}
-		int maxPlay = Math.min(maxPlayRule, maxPlayHandcards);
-		while(maxPlay > 0) {
+		while (maxPlay > 0) {
 			Card card = players.get(turn).playCard(ui, maxPlay);
 			playCard(card);
 			maxPlay--;
@@ -353,9 +356,16 @@ public class Game {
 				drawPhase(redraw, draw_new-draw);
 				draw = draw_new;
 			}
-			if (play_new > maxPlayRule) {
-				maxPlay += (play_new - maxPlayRule);
-				maxPlay = Math.min(maxPlay, players.get(turn).Handcards().size());
+			if (play_new != maxPlayRule) {
+				if (play_new == 0) {
+					maxPlay = players.get(turn).Handcards().size();
+				} else {
+					if (maxPlayRule == 0) maxPlayRule = maxPlayHandcards;
+					maxPlay += (play_new - maxPlayRule);
+					maxPlay = Math.min(maxPlay, players.get(turn).Handcards().size());
+				}
+				System.out.printf("A new play rule becomes effective.");
+				maxPlayRule = play_new;
 			}
 		}	
 	}
@@ -390,6 +400,7 @@ public class Game {
 			if (player.getKeepers().contains(keeper1) && player.getKeepers().contains(keeper2)) {
 				winner = true;
 				System.out.println("GAME OVER\nPlayer " + player.getNickName() + " wins!!!");
+				System.exit(0);
 			}
 		}
 	}
@@ -431,7 +442,7 @@ public class Game {
 			}
 		}
 		if (s == "keeper") {
-			System.out.printf("%s, your turn is over.\n\n\n", players.get(turn).getNickName());
+			System.out.printf("\n%s, your turn is over.\n\n\n", players.get(turn).getNickName());
 		}
 	}
 	public String displayKeepers(){
