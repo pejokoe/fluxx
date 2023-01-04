@@ -191,14 +191,9 @@ public class Game {
 			}
 			size=listOne.size();
 		}
-		/*
-		  We have to delete this, it is just to test.
-		System.out.printf("One:%s%n", listOne);
-		System.out.print(listOne.size()); */
 		return cardGoals;
 	}
 	
-
 	// game routine
 	private void start() {
 		tutorial();
@@ -430,7 +425,8 @@ public class Game {
 	
 	
 	// discarding hand cards and keepers surpassing the corresponding limit
-	public void discardPhase(String s) {
+	public void discardPhase(String s) 
+	{
 		int limit = ruleArea.getLimit(s);
 		int noCards = 0;
 		if (limit != -1) {
@@ -443,12 +439,21 @@ public class Game {
 			while(discard > 0) {
 				Card card = null;
 				if (s == "hand") {
-					card = players.get(turn).discardHand(ui, discard);}
-				else if (s == "keeper") {
-					card = players.get(turn).discardKeeper(ui, discard);
+					if(discard==noCards){
+						discardPile.addAll(players.get(turn).Handcards());
+						players.get(turn).Handcards().clear();
+						discard=0;
+					}
+					else{
+					card = players.get(turn).discardHand(ui, discard);
+					discardPile.add(card);
+					discard --;
+					}
+				} else if (s == "keeper") {
+					card = players.get(turn).discardKeeper(ui, discard); 
+					discardPile.add(card);
+					discard --;
 				}
-				discardPile.add(card);
-				discard --;
 			}
 		}
 		if (s == "keeper") {
@@ -458,15 +463,20 @@ public class Game {
 	
 	// method to apply limit rules immediately for all players except the player
 	// whose turn it currently is
-	public void discardImmediately(String s) {
-		
+	public void discardImmediately(String s) 
+	{
 		int limit = 0;
 		if (s == "hand") {
 			limit = ruleArea.getLimit("hand");
-			System.out.println("Some players have to discard hand cards according to the new rules.");
+			if(limit==0) {
+			System.out.println("All players will have 0 in hand.");
+			}
+			else {
+			System.out.println("Some players could have to discard hand cards according to the new rules.");
+			}
 		} else if (s == "keeper") {
 			limit = ruleArea.getLimit("keeper");
-			System.out.println("Some players have to discard keeper cards according to the new rules.");
+			System.out.println("Some players could have to discard keeper cards according to the new rules.");
 		}
 		int noCards = 0;
 		int discard = 0;
@@ -482,18 +492,29 @@ public class Game {
 					discard = noCards - limit;
 					while (discard > 0) {
 						if (s == "hand") {
+							
+							if(discard==noCards){
+								discardPile.addAll(player.Handcards());
+								player.Handcards().clear();
+								discard=0;
+							}
+							else{
 							card = player.discardHand(ui, discard);
+							discardPile.add(card);
+							discard --;
+							}
 						} else if (s == "keeper") {
 							card = player.discardKeeper(ui, discard);
+							discardPile.add(card);
+							discard --;
 						}
-						discardPile.add(card);
-						discard--;
+						
+						
 					}
 				}
 			}
 		}
 	}
-	
 	
 	// display methods for all "areas"
 	public String displayKeepers(){
